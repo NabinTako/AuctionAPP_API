@@ -18,24 +18,24 @@ namespace Auction.Services {
 		//}
 
 		public static async Task<string> login(UserLoginDTO user) {
+				DbContext database = new DbContext();
+				var connection = database.client.GetDatabase("AuctionApp").GetCollection<UserData>("UserData");
 
-			DbContext database = new DbContext();
-			var connection = database.client.GetDatabase("AuctionApp").GetCollection<UserData>("UserData");
+				//var filter = Builders<UserData>.Filter.Eq(u => u.UserName.ToLower(), user.UserName.ToLower());
+				//UserData userData = connection.Find(filter).FirstOrDefault();
 
-			//var filter = Builders<UserData>.Filter.Eq(u => u.UserName.ToLower(), user.UserName.ToLower());
-			//UserData userData = connection.Find(filter).FirstOrDefault();
+				UserData userData = await connection.Find(u => u.UserEmail.ToLower().Equals(user.UserEmail)).FirstOrDefaultAsync();
+				if (userData == null) {
+					return "0";
 
-			UserData userData = await connection.Find(u => u.UserEmail.ToLower().Equals(user.UserEmail)).FirstOrDefaultAsync();
-			if (userData == null) {
-				return "0";
+				} else if (VerifyPasswordHash(user.UserPassword!, userData.PasswordHash, userData.PasswordSalt) == false) {
 
-			} else if (VerifyPasswordHash(user.UserPassword!, userData.PasswordHash, userData.PasswordSalt) == false) {
+					return "0";
+				} else {
 
-				return "0";
-			} else {
-
-				return CreateToken(userData);
-			}
+					return CreateToken(userData);
+				}
+			
 		}
 
 		public static async Task<string> ResetPassword(string userEmail, string password) {
@@ -79,10 +79,10 @@ namespace Auction.Services {
 
 			return "Incorrect Password !!";
 		}
-		public static async Task<bool> Register(UserSignupDTO user) {
+		public static async Task<string> Register(UserSignupDTO user) {
 
 			if (await UserExists(user.UserEmail!)) {
-				return false;
+				return "0";
 
 			}
 			CreatePasswordHash(user.ConfirmPassword!, out byte[] PasswordHash, out byte[] PasswordSalt);
@@ -98,13 +98,12 @@ namespace Auction.Services {
 			var connection = database.client.GetDatabase("AuctionApp").GetCollection<UserData>("UserData");
 			connection.InsertOne(userDB);
 
-			return true;
+			return "1";
 		}
 		public static async Task<bool> UserExists(string userEmail) {
 			DbContext database = new DbContext();
 			var connection = database.client.GetDatabase("AuctionApp").GetCollection<UserData>("UserData");
-
-			if (await connection.Find(u => u.UserEmail.ToLower() == userEmail.ToLower()).FirstOrDefaultAsync() == null) {
+			if ( (await connection.FindAsync(u => u.UserEmail.ToLower() == userEmail.ToLower())).FirstOrDefault() == null) {
 				return false;
 			}
 			return true;
