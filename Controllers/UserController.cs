@@ -19,26 +19,33 @@ namespace Auction.Controllers {
 
 		[AllowAnonymous]
 		[HttpPost("signup")]
-		public async Task<ActionResult<bool>> UserSignUp(UserSignupDTO userData) {
+		public async Task<ActionResult<string>> UserSignUp(UserSignupDTO userData) {
+			try {
+				if (await UserSerices.Register(userData) == "1") {
 
-			if(await UserSerices.Register(userData)) {
-
-				return true;
-			} else {
-				return false;
+					return "UserSignUp success";
+				} else {
+					return "User with this email exists";
+				}
+			}catch (Exception ex) {
+				return ex.Message;
 			}
 
 		}
 
 		[AllowAnonymous]
-		[HttpPost("Signin")]
+		[HttpPost("signin")]
 		public async Task<ActionResult<string>> UserLoginIn(UserLoginDTO userData) {
-			var response = await UserSerices.login(userData);
-			if (response != "0") {
+			try {
+				var response = await UserSerices.login(userData);
+				if (response != "0") {
 
-				return response.ToString()!;
-			} else {
-				return "UserEmail or password doesnot match!";
+					return response.ToString()!;
+				} else {
+					return "UserEmail or password doesnot match!";
+				}
+			}catch(Exception ex) {
+				return ex.Message;
 			}
 
 		}
@@ -46,18 +53,23 @@ namespace Auction.Controllers {
 		[AllowAnonymous]
 		[HttpPost("forgotpassword")]
 		public async Task<ActionResult<string>> ResetPassword(string useremail, string password) {
-			var response = await UserSerices.ResetPassword(useremail, password);
-			if (response != "0") {
+			try {
+				var response = await UserSerices.ResetPassword(useremail, password);
+				if (response != "0") {
 
-				return response.ToString()!;
-			} else {
-				return "Username or password doesnot match!";
+					return response.ToString()!;
+				} else {
+					return "Username or password doesnot match!";
+				}
+			}catch (Exception ex) {
+				return ex.Message;
 			}
 
 		}
 
 		[HttpPost("changepassword")]
 		public async Task<ActionResult<string>> ChangePassword(string oldPassword,string newPassword) {
+			try { 
 			string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
 			var response = await UserSerices.ChangePassword(userId, oldPassword, newPassword);
@@ -66,6 +78,9 @@ namespace Auction.Controllers {
 				return response.ToString()!;
 			} else {
 				return "Username or password doesnot match!";
+			}
+			} catch (Exception ex) {
+				return ex.Message;
 			}
 
 		}

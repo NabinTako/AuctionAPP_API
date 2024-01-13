@@ -13,69 +13,85 @@ namespace Auction.Controllers {
 
 		[HttpGet("getdata")]
 		public ActionResult<AuctionItemGetDTO> GetItemData() {
-			var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
-			List<AuctionItem> data = connection.Find(auctionItem => true).ToList();
-			List<AuctionItemGetDTO> response = new List<AuctionItemGetDTO>();
-			foreach (var itemdata in data) {
-				response.Add(new AuctionItemGetDTO {
-					_id = itemdata._id.ToString(),
-					ImageUrl = itemdata.ImageUrl,
-					ArtistName = itemdata.ArtistName,
-					Classification = itemdata.Classification,
-					Detail = itemdata.Detail,
-					EstimatedPrice = itemdata.EstimatedPrice,
-					ItemType = itemdata.ItemType,
-					Dimensions = itemdata.Dimensions,
-					Medium = itemdata.Medium,
-					Weight = itemdata.Weight,
-					IsFramed = itemdata.IsFramed,
-				});
-			}
+			try {
+				var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
+				List<AuctionItem> data = connection.Find(auctionItem => true).ToList();
+				List<AuctionItemGetDTO> response = new List<AuctionItemGetDTO>();
+				foreach (var itemdata in data) {
+					response.Add(new AuctionItemGetDTO {
+						_id = itemdata._id.ToString(),
+						ImageUrl = itemdata.ImageUrl,
+						ArtistName = itemdata.ArtistName,
+						Classification = itemdata.Classification,
+						Detail = itemdata.Detail,
+						EstimatedPrice = itemdata.EstimatedPrice,
+						ItemType = itemdata.ItemType,
+						Dimensions = itemdata.Dimensions,
+						Medium = itemdata.Medium,
+						Weight = itemdata.Weight,
+						IsFramed = itemdata.IsFramed,
+					});
+				}
 
-			return Ok(response);
+				return Ok(response);
+			}catch (Exception ex) {
+				return (ex.Message);
+			}
 
 		}
 
 		[HttpGet("getsingledata/{id}")]
 		public ActionResult<AuctionItemGetDTO> GetSingleItemData(string id) {
-			var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
+			try {
+				var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
 
-			List<AuctionItem> data = connection.Find(auctionItem => auctionItem._id.ToString() == id).ToList();
-			AuctionItemGetDTO response = new AuctionItemGetDTO {
-				_id = data[0]._id.ToString(),
-				ImageUrl = data[0].ImageUrl,
-				ArtistName = data[0].ArtistName,
-				Classification = data[0].Classification,
-				Detail = data[0].Detail,
-				EstimatedPrice = data[0].EstimatedPrice,
-				ItemType = data[0].ItemType,
-				Dimensions = data[0].Dimensions,
-				Medium = data[0].Medium,
-				Weight = data[0].Weight,	
-				IsFramed = data[0].IsFramed,
-			};
-			return Ok(response);
+				List<AuctionItem> data = connection.Find(auctionItem => auctionItem._id.ToString() == id).ToList();
+				AuctionItemGetDTO response = new AuctionItemGetDTO {
+					_id = data[0]._id.ToString(),
+					ImageUrl = data[0].ImageUrl,
+					ArtistName = data[0].ArtistName,
+					Classification = data[0].Classification,
+					Detail = data[0].Detail,
+					EstimatedPrice = data[0].EstimatedPrice,
+					ItemType = data[0].ItemType,
+					Dimensions = data[0].Dimensions,
+					Medium = data[0].Medium,
+					Weight = data[0].Weight,
+					IsFramed = data[0].IsFramed,
+				};
+				return Ok(response);
+			}catch (Exception ex) {
+				return BadRequest(ex.Message);
+			}
 		}
 
 		[HttpGet("filterbyname/{artistname}")]
 		public ActionResult<AuctionItemGetDTO> GetItemDataThroughArtistName(string artistname) {
-			var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
+			try {
+				var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
 
-			List<AuctionItem> data = connection.Find(auctionItem => auctionItem.ArtistName == artistname.Trim()).ToList();
-			AuctionItemGetDTO response = new AuctionItemGetDTO {
-				_id = data[0]._id.ToString(),
-				ImageUrl = data[0].ImageUrl,
-				ArtistName = data[0].ArtistName,
-				Classification = data[0].Classification,
-				Detail = data[0].Detail,
-				EstimatedPrice = data[0].EstimatedPrice,
-				ItemType = data[0].ItemType,
-				Dimensions = data[0].Dimensions,
-				Medium = data[0].Medium,
-				Weight = data[0].Weight,
-				IsFramed = data[0].IsFramed,
-			};
-			return Ok(response);
+				List<AuctionItem> data = connection.Find(auctionItem => auctionItem.ArtistName == artistname.Trim()).ToList();
+				List<AuctionItemGetDTO> response = new List<AuctionItemGetDTO>();
+
+				foreach (var item in data) {
+					response.Add(new AuctionItemGetDTO {
+						_id = item._id.ToString(),
+						ImageUrl = item.ImageUrl,
+						ArtistName = item.ArtistName,
+						Classification = item.Classification,
+						Detail = item.Detail,
+						EstimatedPrice = item.EstimatedPrice,
+						ItemType = item.ItemType,
+						Dimensions = item.Dimensions,
+						Medium = item.Medium,
+						Weight = item.Weight,
+						IsFramed = item.IsFramed
+					});
+				}
+				return Ok(response);
+			}catch (Exception ex) {
+				return BadRequest(ex.Message);
+			}
 		}
 
 
@@ -89,7 +105,7 @@ namespace Auction.Controllers {
 
 				AuctionItem mappedItemData = new AuctionItem() {
 					_id = data[0]._id,
-					ImageUrl = data[0].ImageUrl,
+					ImageUrl = itemData.ImageUrl,
 					ArtistName = itemData.ArtistName,
 					Classification = itemData.Classification,
 					Detail = itemData.Detail,
