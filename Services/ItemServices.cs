@@ -44,7 +44,7 @@ namespace Auction.Services {
 			ItemBidInformation mappedItemBidData = new ItemBidInformation() {
 				UserId = userId,
 				ItemId = itemData.ItemId,
-				BitAmount = itemData.BitAmount
+				BitAmount = itemData.BidAmount
 			};
 
 			connection.InsertOne(mappedItemBidData);
@@ -64,7 +64,7 @@ namespace Auction.Services {
 				_id = DbBidInfo._id,
 				UserId = DbBidInfo.UserId,
 				ItemId = updatedBid.ItemId,
-				BitAmount = updatedBid.BitAmount
+				BitAmount = updatedBid.BidAmount
 			};
 
 			connection.ReplaceOne(BidInfo => BidInfo._id.ToString() == DbBidInfo._id.ToString(), mappedItemData);

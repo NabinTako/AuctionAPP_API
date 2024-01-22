@@ -36,7 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 	});
 
 builder.Services.AddCors(options => options.AddPolicy(name: "userPolicies",
-	policy => policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader()
+	policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
 	));
 
 var app = builder.Build();

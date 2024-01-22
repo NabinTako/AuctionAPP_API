@@ -35,7 +35,7 @@ namespace Auction.Controllers {
 
 				return Ok(response);
 			}catch (Exception ex) {
-				return (ex.Message);
+				return (new AuctionItemGetDTO());
 			}
 
 		}
