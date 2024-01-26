@@ -65,12 +65,12 @@ namespace Auction.Controllers {
 			}
 		}
 
-		[HttpGet("filterbyname/{artistname}")]
-		public ActionResult<AuctionItemGetDTO> GetItemDataThroughArtistName(string artistname) {
+		[HttpGet("filterbyname/{type}")]
+		public ActionResult<AuctionItemGetDTO> GetItemDataThroughClassification(string type) {
 			try {
 				var connection = database.client.GetDatabase("AuctionApp").GetCollection<AuctionItem>("ItemData");
 
-				List<AuctionItem> data = connection.Find(auctionItem => auctionItem.ArtistName == artistname.Trim()).ToList();
+				List<AuctionItem> data = connection.Find(auctionItem => auctionItem.Classification == type.Trim()).ToList();
 				List<AuctionItemGetDTO> response = new List<AuctionItemGetDTO>();
 
 				foreach (var item in data) {
